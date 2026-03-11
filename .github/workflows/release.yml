@@ -1,0 +1,48 @@
+name: Build and Release Telegram Bot API
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: # Permite rodar manualmente
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install make git zlib1g-dev libssl-dev gperf cmake g++ -y
+
+      - name: Build Telegram Bot API
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --target install -j$(nproc)
+
+      - name: Prepare Artifact
+        run: |
+          mkdir -p dist
+          cp /usr/local/bin/telegram-bot-api ./dist/
+          cd dist
+          tar -czvf telegram-bot-api-linux-amd64.tar.gz telegram-bot-api
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/telegram-bot-api-linux-amd64.tar.gz
+          body: "Compilação automatizada do Telegram Bot API para Ubuntu 24.04 (AMD64)."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
