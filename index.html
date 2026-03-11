@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Bot API - Build Otimizada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --tg-blue: #24A1DE; --tg-bg: #0e1621; }
+        body { background-color: var(--tg-bg); color: #ffffff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.05; pointer-events: none; }
+        .floating-icon { position: absolute; animation: float 20s infinite linear; }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+        .glass-card { background: rgba(23, 33, 43, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(36, 161, 222, 0.2); }
+    </style>
+</head>
+<body>
+    <div id="icon-bg" class="bg-animation"></div>
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-16">
+            <div class="inline-block p-4 rounded-full bg-[#24A1DE] bg-opacity-10 mb-6">
+                <i data-lucide="bot" class="w-16 h-16 text-[#24A1DE]"></i>
+            </div>
+            <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Telegram Bot API</h1>
+            <p class="text-gray-400 text-xl">Binários pré-compilados e otimizados para alto tráfego.</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="terminal" class="text-[#24A1DE]"></i> Instalação via One-Liner
+            </h2>
+            <div class="glass-card p-6 rounded-2xl relative group flex items-center justify-between">
+                <code id="install-cmd" class="text-blue-400 font-mono text-sm md:text-base">
+                    curl -fsS https://luizhanauer.github.io/telegram-bot-api/install.sh | sh
+                </code>
+                <button onclick="copyCmd(this)" class="ml-4 p-3 bg-[#24A1DE] hover:bg-blue-600 rounded-xl transition-all flex items-center gap-2 min-w-[120px] justify-center">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    <span class="btn-text font-bold">Copiar</span>
+                </button>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-12">
+            <div class="glass-card p-6 rounded-2xl">
+                <i data-lucide="zap" class="text-yellow-500 mb-4 w-8 h-8"></i>
+                <h3 class="font-bold text-lg mb-2">Otimização de Performance</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    Utilizamos a flag <strong>-O3</strong> durante a compilação, que instrui o compilador a realizar as otimizações mais agressivas para que o binário execute o código da forma mais rápida possível. 
+                    Além disso, usamos todas as <strong>threads</strong> (núcleos lógicos) do processador no processo de build, garantindo eficiência máxima.
+                </p>
+            </div>
+            <div class="glass-card p-6 rounded-2xl">
+                <i data-lucide="shield-check" class="text-green-500 mb-4 w-8 h-8"></i>
+                <h3 class="font-bold text-lg mb-2">Segurança e Isolamento</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    O instalador configura automaticamente o serviço para rodar com o seu <strong>usuário local</strong>, evitando o uso de privilégios de root desnecessários e protegendo a integridade do seu servidor.
+                </p>
+            </div>
+        </div>
+
+        <footer class="mt-20 text-center text-gray-500 text-sm">
+            <p>Criado por <a href="https://github.com/luizhanauer" class="text-[#24A1DE] hover:underline italic">luizhanauer</a></p>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Feedback de cópia
+        function copyCmd(btn) {
+            const text = document.getElementById('install-cmd').innerText;
+            const btnText = btn.querySelector('.btn-text');
+            const icon = btn.querySelector('i');
+            
+            navigator.clipboard.writeText(text);
+            
+            // Alterar estado
+            btn.classList.replace('bg-[#24A1DE]', 'bg-green-600');
+            btnText.innerText = "Copiado!";
+            
+            setTimeout(() => {
+                btn.classList.replace('bg-green-600', 'bg-[#24A1DE]');
+                btnText.innerText = "Copiar";
+            }, 2000);
+        }
+
+        // Fundo animado
+        const bg = document.getElementById('icon-bg');
+        const icons = ['bot', 'cpu', 'code', 'zap', 'server', 'command', 'api'];
+        for (let i = 0; i < 25; i++) {
+            const div = document.createElement('div');
+            div.className = 'floating-icon';
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.animationDelay = Math.random() * 20 + 's';
+            div.style.opacity = Math.random();
+            div.innerHTML = `<i data-lucide="${icons[Math.floor(Math.random()*icons.length)]}"></i>`;
+            bg.appendChild(div);
+        }
+        lucide.createIcons();
+    </script>
+</body>
+</html>
