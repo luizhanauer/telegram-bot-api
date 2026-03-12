@@ -2,19 +2,26 @@ name: Publish Docker Image
 
 on:
   workflow_run:
-    workflows: ["Build and Release"] # Nome do workflow do release.yml
+    workflows: ["Build and Release"]
     types:
       - completed
-  workflow_dispatch: # Mantém manual para quando você quiser forçar
+  workflow_dispatch:
 
 jobs:
   push_to_registry:
-    # Só executa se o workflow de release terminou com SUCESSO
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      # Configura o QEMU para permitir builds multi-plataforma (ex: arm64)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # Configura o Buildx (necessário para cache e multi-plataforma)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -26,6 +33,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile
           push: true
-          # Marcando com a tag v* ou latest
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot-api:latest
+          # Publica para amd64 (PC/Servidor) e arm64 (Apple Silicon/Raspberry)
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/telegram-bot-api:latest
+          # Otimização de cache para não compilar tudo do zero sempre
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
