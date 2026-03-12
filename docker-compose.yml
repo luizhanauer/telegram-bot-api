@@ -1,0 +1,20 @@
+services:
+  telegram-bot-api:
+    image: luizhanauer/telegram-bot-api:latest
+    container_name: telegram-bot-api
+    restart: always
+    env_file: .env
+    ports:
+      - "${API_PORT:-8081}:${API_PORT:-8081}"
+    volumes:
+      - ./tg-data:/var/lib/telegram-bot-api # Persistência de dados
+    environment:
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+    # O comando utiliza as variáveis carregadas pelo ambiente do container
+    command: 
+      - --api-id=${API_ID}
+      - --api-hash=${API_HASH}
+      - --local
+      - --dir=/var/lib/telegram-bot-api
+      - --http-port=${API_PORT:-8081}
